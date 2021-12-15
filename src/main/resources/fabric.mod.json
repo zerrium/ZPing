@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "zping",
+  "version": "0.1.0-SNAPSHOT",
+  "name": "ZPing",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/zping/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "com.zerrium.zping.client.ZPingClient"
+    ],
+    "server": [
+      "com.zerrium.zping.server.ZPingServer"
+    ],
+    "main": [
+      "com.zerrium.zping.ZPing"
+    ]
+  },
+  "mixins": [
+    "zping.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.12.11",
+    "fabric": "*",
+    "minecraft": "1.18.1"
+  }
+}
