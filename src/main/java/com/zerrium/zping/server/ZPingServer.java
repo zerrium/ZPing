@@ -12,12 +12,15 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 
+import static com.zerrium.zping.models.ZPingGeneral.*;
+import static com.zerrium.zping.utils.ZPingGeneralUtils.*;
+
 @Environment(EnvType.SERVER)
 public class ZPingServer implements DedicatedServerModInitializer {
     @Override
     public void onInitializeServer() {
-        ZPing.logInfo("Server initialized!");
-        ServerPlayNetworking.registerGlobalReceiver(ZPing.PING_PACKET_ID, (server, player, handler, buf, responseSender) -> {
+        LogInfo("Server initialized!");
+        ServerPlayNetworking.registerGlobalReceiver(PING_PACKET_ID, (server, player, handler, buf, responseSender) -> {
             BlockPos hitPos = buf.readBlockPos();
             String msg = buf.readString();
             server.execute(() -> {
@@ -27,7 +30,7 @@ public class ZPingServer implements DedicatedServerModInitializer {
                 sendBuf.writeString(msg);
                 for (ServerPlayerEntity otherPlayer : PlayerLookup.tracking((ServerWorld) player.world, hitPos)) {
                     if(otherPlayer != player)
-                        ServerPlayNetworking.send(otherPlayer, ZPing.PING_PACKET_ID, sendBuf);
+                        ServerPlayNetworking.send(otherPlayer, PING_PACKET_ID, sendBuf);
                 }
             });
         });

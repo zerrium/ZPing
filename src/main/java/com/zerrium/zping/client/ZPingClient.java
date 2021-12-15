@@ -35,6 +35,9 @@ import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.RaycastContext;
 import org.lwjgl.glfw.GLFW;
 
+import static com.zerrium.zping.models.ZPingGeneral.*;
+import static com.zerrium.zping.utils.ZPingGeneralUtils.*;
+
 @Environment(EnvType.CLIENT)
 public class ZPingClient implements ClientModInitializer {
 
@@ -51,11 +54,11 @@ public class ZPingClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        ZPing.logInfo("Client initialized!");
+        LogInfo("Client initialized!");
         pingKeyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key."+ ZPing.MOD_ID +".ping", // The translation key of the keybinding's name
+                "key."+ MOD_ID +".ping", // The translation key of the keybinding's name
                 DEFAULT_PING_KEY, // The keycode of the key
-                ZPing.MOD_NAME // The translation key of the keybinding's category.
+                MOD_NAME // The translation key of the keybinding's category.
         ));
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if(pingAmount < PING_LIMIT) {
@@ -99,7 +102,7 @@ public class ZPingClient implements ClientModInitializer {
             }
         });
 
-        ClientPlayNetworking.registerGlobalReceiver(ZPing.PING_PACKET_ID, (client, handler, buf, responseSender) -> {
+        ClientPlayNetworking.registerGlobalReceiver(PING_PACKET_ID, (client, handler, buf, responseSender) -> {
             BlockPos hitPos = buf.readBlockPos();
             String msg = buf.readString();
             client.execute(() -> {
@@ -137,7 +140,7 @@ public class ZPingClient implements ClientModInitializer {
                 msg = entity.getName().getString();
                 break;
             default:
-                ZPing.logWarn("Unexpected value: " + hitType);
+                LogWarn("Unexpected value: " + hitType);
         }
         if(isHit) {
             client.player.sendMessage(new LiteralText(msg + " (" +  hitPos.toShortString() + ")"), true);
@@ -146,7 +149,7 @@ public class ZPingClient implements ClientModInitializer {
             PacketByteBuf buf = PacketByteBufs.create();
             buf.writeBlockPos(hitPos);
             buf.writeString(msg);
-            ClientPlayNetworking.send(ZPing.PING_PACKET_ID, buf);
+            ClientPlayNetworking.send(PING_PACKET_ID, buf);
         }
         return isHit;
     }
