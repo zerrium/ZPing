@@ -25,7 +25,7 @@ public class ZPingServer implements DedicatedServerModInitializer {
                 PacketByteBuf sendBuf = PacketByteBufs.create();
                 sendBuf.writeBlockPos(hitPos);
                 sendBuf.writeString(msg);
-                for (ServerPlayerEntity otherPlayer : PlayerLookup.all(server)) {
+                for (ServerPlayerEntity otherPlayer : PlayerLookup.tracking((ServerWorld) player.world, hitPos)) {
                     if(otherPlayer != player)
                         ServerPlayNetworking.send(otherPlayer, ZPing.PING_PACKET_ID, sendBuf);
                 }
