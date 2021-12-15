@@ -9,6 +9,6 @@ public class ZPing implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        LogInfo("Initializing "+ MOD_NAME +" "+ MOD_VERSION +"!");
+        logInfo("Initializing "+ MOD_NAME +" "+ MOD_VERSION +"!");
     }
 }

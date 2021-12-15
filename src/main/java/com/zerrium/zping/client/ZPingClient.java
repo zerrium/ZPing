@@ -1,6 +1,5 @@
 package com.zerrium.zping.client;
 
-import com.zerrium.zping.ZPing;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -8,19 +7,13 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
@@ -54,7 +47,7 @@ public class ZPingClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        LogInfo("Client initialized!");
+        logInfo("Client initialized!");
         pingKeyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key."+ MOD_ID +".ping", // The translation key of the keybinding's name
                 DEFAULT_PING_KEY, // The keycode of the key
@@ -140,7 +133,7 @@ public class ZPingClient implements ClientModInitializer {
                 msg = entity.getName().getString();
                 break;
             default:
-                LogWarn("Unexpected value: " + hitType);
+                logWarn("Unexpected value: " + hitType);
         }
         if(isHit) {
             client.player.sendMessage(new LiteralText(msg + " (" +  hitPos.toShortString() + ")"), true);
