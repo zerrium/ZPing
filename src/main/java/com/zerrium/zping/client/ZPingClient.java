@@ -100,6 +100,7 @@ public class ZPingClient implements ClientModInitializer {
             String msg = buf.readString();
             client.execute(() -> {
                 // Everything in this lambda is run on the render thread
+                assert client.player != null;
                 client.player.sendMessage(new LiteralText(msg + " (" +  hitPos.toShortString() + ")"), true);
                 SoundEvent pingSound = new SoundEvent(PING_SOUND_ID);
                 client.player.playSound(pingSound, 1, 2);
@@ -109,8 +110,10 @@ public class ZPingClient implements ClientModInitializer {
 
     private boolean ping(MinecraftClient client) {
 
+        if(client == null)
+            return false;
         HitResult hit = new ArbitraryRaycast(client, 1, 40).hit;
-        if(hit == null)
+        if(hit == null || client.player == null || client.world == null)
             return false;
         Type hitType = hit.getType();
         boolean isHit = false;
@@ -148,7 +151,7 @@ public class ZPingClient implements ClientModInitializer {
     }
 
 
-    private class ArbitraryRaycast {
+    private static class ArbitraryRaycast {
 
         MinecraftClient client;
         int width;
@@ -162,11 +165,13 @@ public class ZPingClient implements ClientModInitializer {
         }
 
         public ArbitraryRaycast(MinecraftClient client, float tickDelta, double reachMultiplier) {
-            this.reachMultiplier = reachMultiplier;
+            ArbitraryRaycast.reachMultiplier = reachMultiplier;
             setup(client, tickDelta);
         }
 
         private void setup(MinecraftClient client, float tickDelta) {
+            if(client == null || client.cameraEntity == null)
+                return;
             this.client = client;
             width = client.getWindow().getScaledWidth();
             height = client.getWindow().getScaledHeight();
@@ -212,7 +217,7 @@ public class ZPingClient implements ClientModInitializer {
 
         private static HitResult raycastInDirection(MinecraftClient client, float tickDelta, Vec3d direction) {
             Entity entity = client.getCameraEntity();
-            if (entity == null || client.world == null) {
+            if (entity == null || client.world == null || client.interactionManager == null) {
                 return null;
             }
 
