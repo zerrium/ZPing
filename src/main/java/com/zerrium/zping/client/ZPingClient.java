@@ -1,12 +1,14 @@
 package com.zerrium.zping.client;
 
 import com.zerrium.zping.utils.ZPingArbitraryRaycast;
+import com.zerrium.zping.utils.ZPingRender;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
@@ -23,7 +25,8 @@ import net.minecraft.util.math.BlockPos;
 import org.lwjgl.glfw.GLFW;
 
 import static com.zerrium.zping.models.ZPingGeneral.*;
-import static com.zerrium.zping.utils.ZPingGeneralUtils.*;
+import static com.zerrium.zping.utils.ZPingGeneralUtils.logInfo;
+import static com.zerrium.zping.utils.ZPingGeneralUtils.logWarn;
 
 @Environment(EnvType.CLIENT)
 public class ZPingClient implements ClientModInitializer {
@@ -94,11 +97,14 @@ public class ZPingClient implements ClientModInitializer {
             client.execute(() -> {
                 // Everything in this lambda is run on the render thread
                 assert client.player != null;
+                ZPingRender.currentClient = client;
+                ZPingRender.addPing(hitPos);
                 client.player.sendMessage(new LiteralText(msg + " (" +  hitPos.toShortString() + ")"), true);
                 SoundEvent pingSound = new SoundEvent(PING_SOUND_ID);
                 client.player.playSound(pingSound, 1, 2);
             });
         });
+        HudRenderCallback.EVENT.register(ZPingRender::renderPing);
         logInfo("Client initialized!");
     }
 
@@ -136,6 +142,8 @@ public class ZPingClient implements ClientModInitializer {
             client.player.sendMessage(new LiteralText(msg + " (" +  hitPos.toShortString() + ")"), true);
             SoundEvent pingSound = new SoundEvent(PING_SOUND_ID);
             client.player.playSound(pingSound, 1, 2);
+            ZPingRender.currentClient = client;
+            ZPingRender.addPing(hitPos);
             PacketByteBuf buf = PacketByteBufs.create();
             buf.writeBlockPos(hitPos);
             buf.writeString(msg);
