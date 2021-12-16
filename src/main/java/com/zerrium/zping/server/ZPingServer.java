@@ -18,7 +18,6 @@ import static com.zerrium.zping.utils.ZPingGeneralUtils.*;
 public class ZPingServer implements DedicatedServerModInitializer {
     @Override
     public void onInitializeServer() {
-        logInfo("Server initialized!");
         ServerPlayNetworking.registerGlobalReceiver(PING_PACKET_ID, (server, player, handler, buf, responseSender) -> {
             BlockPos hitPos = buf.readBlockPos();
             String msg = buf.readString();
@@ -33,6 +32,7 @@ public class ZPingServer implements DedicatedServerModInitializer {
                 }
             });
         });
+        logInfo("Server initialized!");
     }
 
 

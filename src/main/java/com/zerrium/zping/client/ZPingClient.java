@@ -41,7 +41,6 @@ public class ZPingClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        logInfo("Client initialized!");
         pingKeyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key."+ MOD_ID +".ping", // The translation key of the keybinding's name
                 DEFAULT_PING_KEY, // The keycode of the key
@@ -100,6 +99,7 @@ public class ZPingClient implements ClientModInitializer {
                 client.player.playSound(pingSound, 1, 2);
             });
         });
+        logInfo("Client initialized!");
     }
 
     private boolean ping(MinecraftClient client) {
