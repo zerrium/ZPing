@@ -22,12 +22,12 @@ public class ZPingRender {
     public static final int PING_LIFE = 80;
     private static float tick = 0;
 
-    public static void renderPing(MatrixStack matrixStack, float tickDelta) {
+    public static void renderPing(final MatrixStack matrixStack, final float tickDelta) {
         updatePings(tickDelta);
         drawPings(matrixStack);
     }
 
-    private static void updatePings(float tickDelta) {
+    private static void updatePings(final float tickDelta) {
         tick += tickDelta;
         if (currentClient != null && tick >= 1) {
             tick = 0;
@@ -50,11 +50,11 @@ public class ZPingRender {
         }
     }
 
-    private static void drawPings(MatrixStack matrixStack) {
+    private static void drawPings(final MatrixStack matrixStack) {
         if(!pingList.isEmpty()) {
             for (Entry<BlockPos, Integer> entry : pingList.entrySet()) {
-                BlockPos pingPos = entry.getKey();
-                int pingLife = entry.getValue();
+                final BlockPos pingPos = entry.getKey();
+                final int pingLife = entry.getValue();
                 if (pingLife > 0) {
                     Vec2f screenPos = blockPosToScreenPos(pingPos, matrixStack);
                     drawPing(matrixStack, (int) screenPos.x, (int) screenPos.y, 1,1,1,0xffff0000);
@@ -63,7 +63,7 @@ public class ZPingRender {
         }
     }
 
-    private static void drawPing(MatrixStack matrixStack, int x, int y, int width, int height, int stroke, int color) {
+    private static void drawPing(final MatrixStack matrixStack, final int x, final int y, int width, int height, final int stroke, final int color) {
         matrixStack.push();
         matrixStack.translate(x-stroke, y-stroke, 0);
         width += stroke *2;
@@ -75,12 +75,12 @@ public class ZPingRender {
         matrixStack.pop();
     }
 
-    // Need a method of translating 3d world space coordinates to screen space
-    private static Vec2f blockPosToScreenPos(BlockPos blockPos, MatrixStack matrixStack) {
+    // TODO: Need a method of translating 3d world space coordinates to screen space
+    private static Vec2f blockPosToScreenPos(final BlockPos blockPos, final MatrixStack matrixStack) {
         return new Vec2f(0,0);
     }
 
-    public static void addPing(BlockPos pingPos) {
+    public static void addPing(final BlockPos pingPos) {
         pingList.put(pingPos, 80);
     }
 }

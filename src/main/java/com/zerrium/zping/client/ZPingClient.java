@@ -92,15 +92,15 @@ public class ZPingClient implements ClientModInitializer {
         });
 
         ClientPlayNetworking.registerGlobalReceiver(PING_PACKET_ID, (client, handler, buf, responseSender) -> {
-            BlockPos hitPos = buf.readBlockPos();
-            String msg = buf.readString();
+            final BlockPos hitPos = buf.readBlockPos();
+            final String msg = buf.readString();
             client.execute(() -> {
                 // Everything in this lambda is run on the render thread
                 assert client.player != null;
                 ZPingRender.currentClient = client;
                 ZPingRender.addPing(hitPos);
                 client.player.sendMessage(new LiteralText(msg + " (" +  hitPos.toShortString() + ")"), true);
-                SoundEvent pingSound = new SoundEvent(PING_SOUND_ID);
+                final SoundEvent pingSound = new SoundEvent(PING_SOUND_ID);
                 client.player.playSound(pingSound, 1, 2);
             });
         });
@@ -108,14 +108,14 @@ public class ZPingClient implements ClientModInitializer {
         logInfo("Client initialized!");
     }
 
-    private boolean ping(MinecraftClient client) {
+    private boolean ping(final MinecraftClient client) {
 
         if(client == null)
             return false;
-        HitResult hit = new ZPingArbitraryRaycast(client, 1, 40).hit;
+        final HitResult hit = new ZPingArbitraryRaycast(client, 1, 40).hit;
         if(hit == null || client.player == null || client.world == null)
             return false;
-        Type hitType = hit.getType();
+        final Type hitType = hit.getType();
         boolean isHit = false;
         String msg = null;
         BlockPos hitPos = null;
@@ -140,11 +140,11 @@ public class ZPingClient implements ClientModInitializer {
         }
         if(isHit) {
             client.player.sendMessage(new LiteralText(msg + " (" +  hitPos.toShortString() + ")"), true);
-            SoundEvent pingSound = new SoundEvent(PING_SOUND_ID);
+            final SoundEvent pingSound = new SoundEvent(PING_SOUND_ID);
             client.player.playSound(pingSound, 1, 2);
             ZPingRender.currentClient = client;
             ZPingRender.addPing(hitPos);
-            PacketByteBuf buf = PacketByteBufs.create();
+            final PacketByteBuf buf = PacketByteBufs.create();
             buf.writeBlockPos(hitPos);
             buf.writeString(msg);
             ClientPlayNetworking.send(PING_PACKET_ID, buf);

@@ -19,11 +19,11 @@ public class ZPingServer implements DedicatedServerModInitializer {
     @Override
     public void onInitializeServer() {
         ServerPlayNetworking.registerGlobalReceiver(PING_PACKET_ID, (server, player, handler, buf, responseSender) -> {
-            BlockPos hitPos = buf.readBlockPos();
-            String msg = buf.readString();
+            final BlockPos hitPos = buf.readBlockPos();
+            final String msg = buf.readString();
             server.execute(() -> {
                 // Everything in this lambda is run on the render thread
-                PacketByteBuf sendBuf = PacketByteBufs.create();
+                final PacketByteBuf sendBuf = PacketByteBufs.create();
                 sendBuf.writeBlockPos(hitPos);
                 sendBuf.writeString(msg);
                 for (ServerPlayerEntity otherPlayer : PlayerLookup.tracking((ServerWorld) player.world, hitPos)) {

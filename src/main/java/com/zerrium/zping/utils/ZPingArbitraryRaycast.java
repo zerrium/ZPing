@@ -25,34 +25,34 @@ public class ZPingArbitraryRaycast {
         setup(client, tickDelta);
     }
 
-    public ZPingArbitraryRaycast(MinecraftClient client, float tickDelta, double reachMultiplier) {
+    public ZPingArbitraryRaycast(final MinecraftClient client, final float tickDelta, final double reachMultiplier) {
         ZPingArbitraryRaycast.reachMultiplier = reachMultiplier;
         setup(client, tickDelta);
     }
 
-    private void setup(MinecraftClient client, float tickDelta) {
+    private void setup(final MinecraftClient client, final float tickDelta) {
         if(client == null || client.cameraEntity == null)
             return;
         this.client = client;
         width = client.getWindow().getScaledWidth();
         height = client.getWindow().getScaledHeight();
         cameraDirection = client.cameraEntity.getRotationVec(tickDelta);
-        double fov = client.options.fov;
-        double angleSize = fov/height;
+        final double fov = client.options.fov;
+        final double angleSize = fov/height;
         Vec3f verticalRotationAxis = new Vec3f(cameraDirection);
         verticalRotationAxis.cross(Vec3f.POSITIVE_Y);
         if(!verticalRotationAxis.normalize()) {
             return;//The camera is pointing directly up or down, you'll have to fix this one
         }
 
-        Vec3f horizontalRotationAxis = new Vec3f(cameraDirection);
+        final Vec3f horizontalRotationAxis = new Vec3f(cameraDirection);
         horizontalRotationAxis.cross(verticalRotationAxis);
         horizontalRotationAxis.normalize();
 
         verticalRotationAxis = new Vec3f(cameraDirection);
         verticalRotationAxis.cross(horizontalRotationAxis);
 
-        Vec3d direction = map(
+        final Vec3d direction = map(
                 (float) angleSize,
                 cameraDirection,
                 horizontalRotationAxis,
@@ -65,10 +65,10 @@ public class ZPingArbitraryRaycast {
         hit = raycastInDirection(client, tickDelta, direction);
     }
 
-    private static Vec3d map(float anglePerPixel, Vec3d center, Vec3f horizontalRotationAxis,
-                             Vec3f verticalRotationAxis, int x, int y, int width, int height) {
-        float horizontalRotation = (x - width/2f) * anglePerPixel;
-        float verticalRotation = (y - height/2f) * anglePerPixel;
+    private static Vec3d map(final float anglePerPixel, final Vec3d center, final Vec3f horizontalRotationAxis,
+                             final Vec3f verticalRotationAxis, final int x, final int y, final int width, final int height) {
+        final float horizontalRotation = (x - width/2f) * anglePerPixel;
+        final float verticalRotation = (y - height/2f) * anglePerPixel;
 
         final Vec3f temp2 = new Vec3f(center);
         temp2.rotate(verticalRotationAxis.getDegreesQuaternion(verticalRotation));
@@ -76,8 +76,8 @@ public class ZPingArbitraryRaycast {
         return new Vec3d(temp2);
     }
 
-    private static HitResult raycastInDirection(MinecraftClient client, float tickDelta, Vec3d direction) {
-        Entity entity = client.getCameraEntity();
+    private static HitResult raycastInDirection(final MinecraftClient client, final float tickDelta, final Vec3d direction) {
+        final Entity entity = client.getCameraEntity();
         if (entity == null || client.world == null || client.interactionManager == null) {
             return null;
         }
@@ -95,19 +95,19 @@ public class ZPingArbitraryRaycast {
             }
         }
 
-        Vec3d cameraPos = entity.getCameraPosVec(tickDelta);
+        final Vec3d cameraPos = entity.getCameraPosVec(tickDelta);
 
         extendedReach = extendedReach * extendedReach;
         if (target != null) {
             extendedReach = target.getPos().squaredDistanceTo(cameraPos);
         }
 
-        Vec3d vec3d3 = cameraPos.add(direction.multiply(reachDistance));
-        Box box = entity
+        final Vec3d vec3d3 = cameraPos.add(direction.multiply(reachDistance));
+        final Box box = entity
                 .getBoundingBox()
                 .stretch(entity.getRotationVec(1.0F).multiply(reachDistance))
                 .expand(1.0D, 1.0D, 1.0D);
-        EntityHitResult entityHitResult = ProjectileUtil.raycast(
+        final EntityHitResult entityHitResult = ProjectileUtil.raycast(
                 entity,
                 cameraPos,
                 vec3d3,
@@ -120,9 +120,9 @@ public class ZPingArbitraryRaycast {
             return target;
         }
 
-        Entity entity2 = entityHitResult.getEntity();
-        Vec3d vec3d4 = entityHitResult.getPos();
-        double g = cameraPos.squaredDistanceTo(vec3d4);
+        final Entity entity2 = entityHitResult.getEntity();
+        final Vec3d vec3d4 = entityHitResult.getPos();
+        final double g = cameraPos.squaredDistanceTo(vec3d4);
         if (tooFar && g > 9.0D) {
             return null;
         } else if (g < extendedReach || target == null) {
@@ -136,13 +136,13 @@ public class ZPingArbitraryRaycast {
     }
 
     private static HitResult raycast(
-            Entity entity,
-            double maxDistance,
-            float tickDelta,
-            boolean includeFluids,
-            Vec3d direction
+            final Entity entity,
+            final double maxDistance,
+            final float tickDelta,
+            final boolean includeFluids,
+            final Vec3d direction
     ) {
-        Vec3d end = entity.getCameraPosVec(tickDelta).add(direction.multiply(maxDistance));
+        final Vec3d end = entity.getCameraPosVec(tickDelta).add(direction.multiply(maxDistance));
         return entity.world.raycast(new RaycastContext(
                 entity.getCameraPosVec(tickDelta),
                 end,
