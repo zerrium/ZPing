@@ -83,17 +83,13 @@ public class ZPingArbitraryRaycast {
         }
 
         double reachDistance = client.interactionManager.getReachDistance()*reachMultiplier;//Change this to extend the reach
-        HitResult target = raycast(entity, reachDistance, tickDelta, false, direction);
         boolean tooFar = false;
         double extendedReach = reachDistance;
         if (client.interactionManager.hasExtendedReach()) {
-            extendedReach = 6.0D*reachMultiplier;//Change this to extend the reach
+            extendedReach = 6.0D * reachMultiplier;//Change this to extend the reach
             reachDistance = extendedReach;
-        } else {
-            if (reachDistance > 3.0D) {
-                tooFar = true;
-            }
         }
+        HitResult target = raycast(entity, reachDistance, tickDelta, false, direction);
 
         final Vec3d cameraPos = entity.getCameraPosVec(tickDelta);
 
