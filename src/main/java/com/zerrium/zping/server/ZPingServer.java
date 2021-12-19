@@ -20,12 +20,14 @@ public class ZPingServer implements DedicatedServerModInitializer {
     public void onInitializeServer() {
         ServerPlayNetworking.registerGlobalReceiver(PING_PACKET_ID, (server, player, handler, buf, responseSender) -> {
             final BlockPos hitPos = buf.readBlockPos();
-            final String msg = buf.readString();
+            final String hitName = buf.readString();
+            final String dimensionName = buf.readString();
             server.execute(() -> {
                 // Everything in this lambda is run on the render thread
                 final PacketByteBuf sendBuf = PacketByteBufs.create();
                 sendBuf.writeBlockPos(hitPos);
-                sendBuf.writeString(msg);
+                sendBuf.writeString(hitName);
+                sendBuf.writeString(dimensionName);
                 for (ServerPlayerEntity otherPlayer : PlayerLookup.tracking((ServerWorld) player.world, hitPos)) {
                     if(otherPlayer != player)
                         ServerPlayNetworking.send(otherPlayer, PING_PACKET_ID, sendBuf);

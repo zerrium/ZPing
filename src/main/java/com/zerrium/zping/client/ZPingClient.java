@@ -22,11 +22,11 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.hit.HitResult.Type;
 import net.minecraft.util.math.BlockPos;
+import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.glfw.GLFW;
 
 import static com.zerrium.zping.models.ZPingGeneral.*;
-import static com.zerrium.zping.utils.ZPingGeneralUtils.logInfo;
-import static com.zerrium.zping.utils.ZPingGeneralUtils.logWarn;
+import static com.zerrium.zping.utils.ZPingGeneralUtils.*;
 
 @Environment(EnvType.CLIENT)
 public class ZPingClient implements ClientModInitializer {
@@ -93,14 +93,15 @@ public class ZPingClient implements ClientModInitializer {
 
         ClientPlayNetworking.registerGlobalReceiver(PING_PACKET_ID, (client, handler, buf, responseSender) -> {
             final BlockPos hitPos = buf.readBlockPos();
-            final String msg = buf.readString();
+            final String hitName = buf.readString();
+            final String dimensionName = buf.readString();
             client.execute(() -> {
                 // Everything in this lambda is run on the render thread
                 assert client.player != null;
                 ZPingRender.currentClient = client;
                 ZPingRender.addPing(hitPos);
-                client.player.sendMessage(new LiteralText(msg + " (" +  hitPos.toShortString() + ")"), true);
-                final SoundEvent pingSound = new SoundEvent(PING_SOUND_ID);
+                client.player.sendMessage(new LiteralText(hitName + " (" +  hitPos.toShortString() + ", " + dimensionName + ")"), true);
+                SoundEvent pingSound = new SoundEvent(PING_SOUND_ID);
                 client.player.playSound(pingSound, 1, 2);
             });
         });
@@ -117,7 +118,7 @@ public class ZPingClient implements ClientModInitializer {
             return false;
         final Type hitType = hit.getType();
         boolean isHit = false;
-        String msg = null;
+        String hitName = null;
         BlockPos hitPos = null;
         switch (hitType) {
             case MISS:
@@ -126,27 +127,29 @@ public class ZPingClient implements ClientModInitializer {
                 isHit = true;
                 BlockHitResult blockHit = (BlockHitResult) hit;
                 hitPos = blockHit.getBlockPos();
-                msg = client.world.getBlockState(hitPos).getBlock().getName().getString();
+                hitName = client.world.getBlockState(hitPos).getBlock().getName().getString();
                 break;
             case ENTITY:
                 isHit = true;
                 EntityHitResult entityHit = (EntityHitResult) hit;
                 Entity entity = entityHit.getEntity();
                 hitPos = entity.getBlockPos();
-                msg = entity.getName().getString();
+                hitName = entity.getName().getString();
                 break;
             default:
                 logWarn("Unexpected value: " + hitType);
         }
         if(isHit) {
-            client.player.sendMessage(new LiteralText(msg + " (" +  hitPos.toShortString() + ")"), true);
+            String dimensionName = StringUtils.capitalize(StringUtils.replaceChars(client.world.getRegistryKey().getValue().getPath(), '_', ' '));
+            client.player.sendMessage(new LiteralText(hitName + " (" +  hitPos.toShortString() + ", " + dimensionName + ")"), true);
             final SoundEvent pingSound = new SoundEvent(PING_SOUND_ID);
             client.player.playSound(pingSound, 1, 2);
             ZPingRender.currentClient = client;
             ZPingRender.addPing(hitPos);
             final PacketByteBuf buf = PacketByteBufs.create();
             buf.writeBlockPos(hitPos);
-            buf.writeString(msg);
+            buf.writeString(hitName);
+            buf.writeString(dimensionName);
             ClientPlayNetworking.send(PING_PACKET_ID, buf);
         }
         return isHit;
